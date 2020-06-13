@@ -5,7 +5,7 @@ const requestHandler = (req, res) => {
   const method = req.method;
   if (url === "/") {
     res.write("<html>");
-    res.write("<head><title>Enter Message</title><head>");
+    res.write("<head><title>Enter Message</title></head>");
     res.write(
       '<body><form action="/message" method="POST"><input type="text" name="message"><button type="submit">send request</button></form></body>'
     );
@@ -30,7 +30,7 @@ const requestHandler = (req, res) => {
   }
   res.setHeader("Content-Type", "text/html");
   res.write("<html>");
-  res.write("<head><title>Enter Message</title><head>");
+  res.write("<head><title>Enter Message</title></head>");
   res.write("<body><h1>Enter Message</h1></body>");
   res.write("</html>");
   res.end();
