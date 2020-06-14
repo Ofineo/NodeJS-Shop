@@ -1,11 +1,12 @@
 const express = require("express");
-const path = require('path');
+const path = require("path");
 
-const route = express.Router();
+const adminData = require("./admin");
+const router = express.Router();
 
-route.get("/", (req, res, next) => {
-  console.log("i'm in another middleware");
-  res.sendFile(path.join(__dirname,'../','views','shop.html'));
+router.get("/", (req, res, next) => {
+  const products = adminData.products;
+  res.render("shop", {prods: products, docTitle: 'Shop'});
 });
 
-module.exports = route;
+module.exports = router;

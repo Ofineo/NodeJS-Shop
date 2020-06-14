@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        title #{docTitle}
+        link(rel="stylesheet", href="/css/main.css")
+        link(rel="stylesheet", href="/css/main.products.css")
+    body
+        header.main-header
+            nav.main-header__nav
+                ul.main-header__item-list
+                    a.active(href="/") Shop
+                ul.main-header__item-list
+                    a.active(href="/admin/add-product") Add Product
+        main
+            if prods.length>0
+                .grid
+                    each product in prods
+                        article.card.product_item
+                            header.card_header
+                                h1.prodcut_title #{product.title}
+                            div.card_item
+                                img(src="https://miro.medium.com/max/1200/1*mk1-6aYaf_Bes1E3Imhc0A.jpeg", alt="a book")
+                            div.card_content 
+                                h2.product_price $19.99
+                            p.product_description a very interesting book about so many even more interesting things!
+                        div.card_actions
+                            button.btn Add to cart
+            else    
+                h1 No products
