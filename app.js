@@ -12,8 +12,10 @@ const adminData = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 
 app.use(bodyParser.urlencoded({ extended: false }));
+//setup a path for static serving images, css, etc.
 app.use(express.static(path.join(__dirname,'public')));
 
+//base url is specified here as /admin so they will be considered only starting with that path 
 app.use('/admin',adminData.routes);
 app.use(shopRoutes);
 
