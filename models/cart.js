@@ -31,13 +31,33 @@ module.exports = class Cart {
         cart.products[existingProductIndex] = updatedProduct;
       } else {
         updatedProduct = { id: id, qty: 1 };
+        cart.products = [...cart.products, updatedProduct];
+
       }
       cart.totalPrice += +productPrice;
-      cart.products = { ...cart.products, updatedProduct };
 
       fs.writeFile(p, JSON.stringify(cart), (err) => {
         console.log(err);
       });
+    });
+  }
+  static deleteFromCart(id, Productprice) {
+    fs.readFile(p, (err, fileContent) => {
+      if (err) return;
+      const updatedCart = { ...JSON.parse(fileContent) };
+      const product = updatedCart.products.find((p) => p.id === id);
+      updatedCart.totalPrice =
+        updatedCart.totalPrice - product.qty * Productprice;
+      updatedCart.products = updatedCart.products.filter((p) => p.id !== id);
+      fs.writeFile(p, JSON.stringify(cart), (err) => {
+        console.log(err);
+      });
+    });
+  }
+  static getCart(cb) {
+    fs.readFile(p, (err, fileContent) => {
+      const cart = JSON.parse(fileContent);
+      err ? cb(null) : cb(cart);
     });
   }
 };
