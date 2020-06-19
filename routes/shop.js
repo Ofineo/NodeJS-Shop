@@ -20,5 +20,7 @@ router.get("/product/:productId", shopController.getProduct);
 
 router.get('/orders',shopController.getOrders);
 
+router.post('/cart-delete-item',shopController.postdeleteCartItem);
+
 //export the route so it can be imported in the main app
 module.exports = router;
