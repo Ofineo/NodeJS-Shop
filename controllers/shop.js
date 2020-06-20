@@ -3,26 +3,30 @@ const Cart = require("../models/cart");
 const e = require("express");
 
 exports.getProducts = (req, res, next) => {
-  Product.fetchAll().then(([rows, fetchData]) => {
-    res.render("shop/product-list", {
-      prods: rows,
-      pageTitle: "All products",
-      path: "/products",
-    });
-  });
+  Product.findAll()
+    .then((products) => {
+      res.render("shop/product-list", {
+        prods: products,
+        pageTitle: "All products",
+        path: "/products",
+      });
+    })
+    .catch((err) => console.log(err));
 };
 
 exports.getIndex = (req, res, next) => {
-  Product.fetchAll().then(([rows, fieldData]) => {
-    res.render("shop/index", {
-      prods: rows,
-      pageTitle: "Shop",
-      path: "/index",
-      hasProducts: rows.length > 0,
-      activeShop: true,
-      productCSS: true,
-    });
-  });
+  Product.findAll()
+    .then((products) => {
+      res.render("shop/index", {
+        prods: products,
+        pageTitle: "Shop",
+        path: "/index",
+        hasProducts: products.length > 0,
+        activeShop: true,
+        productCSS: true,
+      });
+    })
+    .catch((err) => console.log(err));
 };
 
 exports.getCart = (req, res, next) => {
