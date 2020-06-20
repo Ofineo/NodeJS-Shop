@@ -31,7 +31,11 @@ exports.getEditProduct = (req, res, next) => {
     return res.redirect("/");
   }
   const prodId = req.params.productId;
-  Product.findById(prodId, (product) => {
+  // Product.findByPK(prodId)
+  Product.findOne({where:{
+    id:prodId
+  }})
+  .then(product=>{
     if (!product) {
       return redirect("/");
     }
@@ -41,7 +45,7 @@ exports.getEditProduct = (req, res, next) => {
       editing: editMode,
       product: product,
     });
-  });
+  })
 };
 
 exports.postEditProduct = (req, res, next) => {
