@@ -22,5 +22,7 @@ router.get('/orders',shopController.getOrders);
 
 router.post('/cart-delete-item',shopController.postdeleteCartItem);
 
+router.post('/create-order',shopController.postOrder);
+
 //export the route so it can be imported in the main app
 module.exports = router;
