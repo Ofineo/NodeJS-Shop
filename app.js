@@ -21,11 +21,10 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use((req, res, next) => {
   User.findById('5ef0bc131b7410ca8b84bcae')
     .then((user) => {
-      req.user = user;
+      req.user = new User(user.name,user.email,user.cart, user._id);
       next();
     })
     .catch((err) => console.log(err));
-  next();
 });
 
 //base url is specified here as /admin so they will be considered only starting with that path
