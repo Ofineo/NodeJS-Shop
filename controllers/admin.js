@@ -57,7 +57,7 @@ exports.postEditProduct = (req, res, next) => {
   const description = req.body.description;
   const price = req.body.price;
   Product.findById(prodId)
-  //the return is a full mongoose object. so we can call save on it
+    //the return is a full mongoose object. so we can call save on it
     .then((product) => {
       product.title = title;
       product.imageUrl = imageUrl;
@@ -74,7 +74,7 @@ exports.postEditProduct = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
   const prodId = req.params.productId;
-  Product.deleteById(prodId)
+  Product.findByIdAndRemove(prodId)
     .then(() => {
       console.log("DELETED PRODUCT");
       res.redirect("/admin/products");
