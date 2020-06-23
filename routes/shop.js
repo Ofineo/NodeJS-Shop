@@ -20,7 +20,7 @@ router.get("/product/:productId", shopController.getProduct);
 
 // router.get('/orders',shopController.getOrders);
 
-// router.post('/cart-delete-item',shopController.postdeleteCartItem);
+router.post('/cart-delete-item',shopController.postdeleteCartItem);
 
 // router.post('/create-order',shopController.postOrder);
 
