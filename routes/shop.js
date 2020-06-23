@@ -6,9 +6,9 @@ const shopController = require("../controllers/shop");
 //create the router mini-app
 const router = express.Router();
 //use router instead of app
-// router.get("/", shopController.getIndex);
+router.get("/", shopController.getIndex);
 
-// router.get('/products', shopController.getProducts)
+router.get('/products', shopController.getProducts)
 
 // router.get('/cart',shopController.getCart)
 
@@ -16,7 +16,7 @@ const router = express.Router();
 
 // router.get('/checkout',shopController.getCheckout)
 
-// router.get("/product/:productId", shopController.getProduct);
+router.get("/product/:productId", shopController.getProduct);
 
 // router.get('/orders',shopController.getOrders);
 

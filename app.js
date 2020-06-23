@@ -18,14 +18,14 @@ app.use(bodyParser.urlencoded({ extended: false }));
 //setup a path for static serving images, css, etc.
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use((req, res, next) => {
-  User.findById("5ef0bc131b7410ca8b84bcae")
-    .then((user) => {
-      req.user = new User(user.name, user.email, user.cart, user._id);
-      next();
-    })
-    .catch((err) => console.log(err));
-});
+// app.use((req, res, next) => {
+//   User.findById("5ef0bc131b7410ca8b84bcae")
+//     .then((user) => {
+//       req.user = new User(user.name, user.email, user.cart, user._id);
+//       next();
+//     })
+//     .catch((err) => console.log(err));
+// });
 
 //base url is specified here as /admin so they will be considered only starting with that path
 app.use("/admin", adminRoutes);
@@ -35,7 +35,7 @@ app.use(errorController.get404);
 
 mongoose
   .connect(
-    "mongodb+srv://nodeComplete:rYX7GHW1EobK0XFw@node-complete-5hx8z.mongodb.net/test?retryWrites=true&w=majority"
+    "mongodb+srv://nodeComplete:rYX7GHW1EobK0XFw@node-complete-5hx8z.mongodb.net/shop?retryWrites=true&w=majority"
   )
   .then((result) => {
     app.listen(3000);

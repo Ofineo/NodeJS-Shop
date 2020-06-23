@@ -1,13 +1,13 @@
 
 // const mongodb = require("mongodb");
 
-class User {
-  constructor(userName, email, cart, id) {
-    this.userName = userName;
-    this.email = email;
-    this.cart = cart; //{items:[]}
-    this._id = id;
-  }
+// class User {
+//   constructor(userName, email, cart, id) {
+//     this.userName = userName;
+//     this.email = email;
+//     this.cart = cart; //{items:[]}
+//     this._id = id;
+//   }
 //   save() {
 //     const db = getDb();
 //     return db
@@ -138,4 +138,4 @@ class User {
 //   }
 // }
 
-module.exports = User;
+// module.exports = User;
