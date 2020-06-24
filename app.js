@@ -33,6 +33,20 @@ app.use(
   })
 );
 
+app.use((req, res, next) => {
+  if (!req.session.user) {
+    return next();
+  }
+  User.findById(req.session.user._id)
+    .then((user) => {
+      req.user = user;
+      next();
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
+
 //base url is specified here as /admin so they will be considered only starting with that path
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);

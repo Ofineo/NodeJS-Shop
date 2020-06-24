@@ -21,7 +21,7 @@ exports.postAddProduct = (req, res, next) => {
     imageUrl: imageUrl,
     description: description,
     price: price,
-    userId: req.session.user._id // in mongoose you can store the entire user object and it will pick up the user id
+    userId: req.user._id // in mongoose you can store the entire user object and it will pick up the user id
   });
   product
     .save()

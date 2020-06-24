@@ -6,7 +6,7 @@ exports.getLogin = (req, res, next) => {
     .render("auth/login", {
       pageTitle: "Login",
       path: "/login",
-      isAuthenticated: false,
+      isAuthenticated: req.session.isLoggedIn,
     })
     .catch((err) => {
       console.log(err);
@@ -14,7 +14,8 @@ exports.getLogin = (req, res, next) => {
 };
 
 exports.postLogin = (req, res, next) => {
-  User.findById("5ef1fc89ed5bd34374237a15").then((user) => {
+  User.findById("5ef1fc89ed5bd34374237a15")
+  .then((user) => {
     req.session.isLoggedIn = true;
     req.session.user = user;
     res.redirect("/");
