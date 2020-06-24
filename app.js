@@ -33,16 +33,6 @@ app.use(
   })
 );
 
-//middleware to create a static user and pass it in our requests
-app.use((req, res, next) => {
-  User.findById("5ef1fc89ed5bd34374237a15")
-    .then((user) => {
-      req.user = user;
-      next();
-    })
-    .catch((err) => console.log(err));
-});
-
 //base url is specified here as /admin so they will be considered only starting with that path
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);
