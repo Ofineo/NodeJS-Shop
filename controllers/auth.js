@@ -14,11 +14,13 @@ exports.getLogin = (req, res, next) => {
 };
 
 exports.postLogin = (req, res, next) => {
-  User.findById("5ef1fc89ed5bd34374237a15")
-  .then((user) => {
+  User.findById("5ef1fc89ed5bd34374237a15").then((user) => {
     req.session.isLoggedIn = true;
     req.session.user = user;
-    res.redirect("/");
+    req.session.save((err) => {
+      console.log(err);
+      res.redirect("/");
+    });
   });
 };
 
@@ -26,5 +28,14 @@ exports.postLogout = (req, res, next) => {
   req.session.destroy((err) => {
     console.log(err);
     res.redirect("/");
+  });
+};
+
+exports.postSignup = (req, res, next) => {};
+
+exports.postLogout = (req, res, next) => {
+  req.session.destroy(err => {
+    console.log(err);
+    res.redirect('/');
   });
 };
