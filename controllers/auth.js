@@ -7,6 +7,8 @@ exports.getLogin = (req, res, next) => {
       pageTitle: "Login",
       path: "/login",
       isAuthenticated: req.session.isLoggedIn,
+    }).then((result)=>{
+
     })
     .catch((err) => {
       console.log(err);
@@ -31,11 +33,41 @@ exports.postLogout = (req, res, next) => {
   });
 };
 
-exports.postSignup = (req, res, next) => {};
+exports.postSignup = (req, res, next) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  const confirmPassword = req.body.confirmPassword;
+  //TO DO Validation
+  User.findOne({ email: email })
+    .then((selection) => {
+      if (selection) {
+        return res.redirect("/singup");
+      }
+      const user = new User({
+        email: email,
+        password: password,
+        cart: { items: [] },
+      });
+      return user.save().then((result) => {
+        res.redirect("/login");
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
+exports.getSignup = (req, res, next) => {
+  res.render("auth/signup", {
+    path: "/signup",
+    pageTitle: "Signup",
+    isAuthenticated: false,
+  });
+};
 
 exports.postLogout = (req, res, next) => {
-  req.session.destroy(err => {
+  req.session.destroy((err) => {
     console.log(err);
-    res.redirect('/');
+    res.redirect("/");
   });
 };
