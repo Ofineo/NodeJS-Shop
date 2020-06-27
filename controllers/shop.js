@@ -24,7 +24,7 @@ exports.getIndex = (req, res, next) => {
         hasProducts: products.length > 0,
         activeShop: true,
         productCSS: true,
-        isAuthenticated: req.session.isLoggedIn
+       
       });
     })
     .catch((err) => console.log(err));
@@ -109,7 +109,7 @@ exports.postOrder = (req, res, next) => {
       });
       const order = new Order({
         user: {
-          name: req.user.name,
+          email: req.user.email,
           userId: req.user,
         },
         products: products,
