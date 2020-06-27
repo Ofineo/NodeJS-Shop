@@ -1,5 +1,16 @@
 const User = require("../models/user");
 const bcrypt = require("bcryptjs");
+const nodemailer = require("nodemailer");
+const sendGridTransport = require("nodemailer-sendgrid-transport");
+
+const transporter = nodemailer.createTransport(
+  sendGridTransport({
+    auth: {
+      api_key:
+        "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",
+    },
+  })
+);
 
 exports.getLogin = (req, res, next) => {
   // console.log(req.session);
@@ -36,6 +47,7 @@ exports.postLogin = (req, res, next) => {
               res.redirect("/");
             });
           }
+          req.flash("error", "invalid email or password");
           res.redirect("/login");
         })
         .catch((err) => {
@@ -61,6 +73,7 @@ exports.postSignup = (req, res, next) => {
   User.findOne({ email: email })
     .then((selection) => {
       if (selection) {
+        req.flash("error", "email in use please pick another one");
         return res.redirect("/signup");
       }
       return bcrypt
@@ -75,6 +88,16 @@ exports.postSignup = (req, res, next) => {
         })
         .then((result) => {
           res.redirect("/login");
+          transporter
+            .sendMail({
+              to: email,
+              from: "shop@NodeComplete.com",
+              subject: "Signup sucess",
+              html: "<h1>Congratulations</h1>",
+            })
+            .catch((err) => {
+              console.log(err);
+            });
         });
     })
     .catch((err) => {
@@ -83,9 +106,16 @@ exports.postSignup = (req, res, next) => {
 };
 
 exports.getSignup = (req, res, next) => {
+  let message = req.flash("error");
+  if (message.length > 0) {
+    message = message[0];
+  } else {
+    message = null;
+  }
   res.render("auth/signup", {
     path: "/signup",
     pageTitle: "Signup",
+    errorMessage: message,
   });
 };
 
