@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
 const sendGridTransport = require("nodemailer-sendgrid-transport");
 const crypto = require("crypto");
+const { validationResult } = require("express-validator/check");
 
 const transporter = nodemailer.createTransport(
   sendGridTransport({
@@ -31,6 +32,14 @@ exports.getLogin = (req, res, next) => {
 exports.postLogin = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
+  const errors = validationResult(req);
+  if(!errors.isEmpty()){
+    return res.status(422).render("auth/login", {
+      pageTitle: "Login",
+      path: "/login",
+      errorMessage: errors.array()[0].msg,
+    });
+  }
   User.findOne({ email: email })
     .then((user) => {
       if (!user) {
@@ -69,40 +78,38 @@ exports.postLogout = (req, res, next) => {
 exports.postSignup = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
-  const confirmPassword = req.body.confirmPassword;
-  //TO DO Validation
-  User.findOne({ email: email })
-    .then((selection) => {
-      if (selection) {
-        req.flash("error", "email in use please pick another one");
-        return res.redirect("/signup");
-      }
-      return bcrypt
-        .hash(password, 12)
-        .then((hashedPassword) => {
-          const user = new User({
-            email: email,
-            password: hashedPassword,
-            cart: { items: [] },
-          });
-          return user.save();
-        })
-        .then((result) => {
-          res.redirect("/login");
-          transporter
-            .sendMail({
-              to: email,
-              from: "basura@outlook.jp",
-              subject: "Signup sucess",
-              html: "<h1>Congratulations</h1>",
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-        });
+  //Validation
+  const errors = validationResult(req);
+  console.log(errors.isEmpty(), errors.array());
+  if (!errors.isEmpty()) {
+    return res.status(422).render("auth/signup", {
+      path: "/signup",
+      pageTitle: "Signup",
+      errorMessage: errors.array()[0].msg,
+    });
+  }
+  bcrypt
+    .hash(password, 12)
+    .then((hashedPassword) => {
+      const user = new User({
+        email: email,
+        password: hashedPassword,
+        cart: { items: [] },
+      });
+      return user.save();
     })
-    .catch((err) => {
-      console.log(err);
+    .then((result) => {
+      res.redirect("/login");
+      transporter
+        .sendMail({
+          to: email,
+          from: "basura@outlook.jp",
+          subject: "Signup sucess",
+          html: "<h1>Congratulations</h1>",
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     });
 };
 
