@@ -2,8 +2,8 @@ const Product = require("../models/product");
 const mongodb = require("mongodb");
 
 exports.getAddProduct = (req, res, next) => {
-  if(!req.session.isLoggedIn){
-    return res.redirect('/login');
+  if (!req.session.isLoggedIn) {
+    return res.redirect("/login");
   }
   res.render("admin/edit-product", {
     pageTitle: "Add Product",
@@ -23,7 +23,7 @@ exports.postAddProduct = (req, res, next) => {
     imageUrl: imageUrl,
     description: description,
     price: price,
-    userId: req.user._id // in mongoose you can store the entire user object and it will pick up the user id
+    userId: req.user._id, // in mongoose you can store the entire user object and it will pick up the user id
   });
   product
     .save()
@@ -64,22 +64,24 @@ exports.postEditProduct = (req, res, next) => {
   Product.findById(prodId)
     //the return is a full mongoose object. so we can call save on it
     .then((product) => {
+      if (product.userId.toString() !== req.user._id.toString()) {
+        return redirect("/");
+      }
       product.title = title;
       product.imageUrl = imageUrl;
       product.description = description;
       product.price = price;
-      return product.save();
-    })
-    .then((result) => {
-      console.log("UPDATED PRODUCT");
-      res.redirect("/admin/products");
+      return product.save().then((result) => {
+        console.log("UPDATED PRODUCT");
+        res.redirect("/admin/products");
+      });
     })
     .catch((err) => console.log(err));
 };
 
 exports.postDeleteProduct = (req, res, next) => {
   const prodId = req.params.productId;
-  Product.findByIdAndRemove(prodId)
+  Product.deleteOne({ _id: prodId, userId: req.user._id })
     .then(() => {
       console.log("DELETED PRODUCT");
       res.redirect("/admin/products");
@@ -88,14 +90,15 @@ exports.postDeleteProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-  Product.find()
-  // .select('title price -_id')
-  // .populate('userId', 'name')
-  .then((products) => {
-    res.render("admin/products", {
-      prods: products,
-      pageTitle: "Products",
-      path: "/admin/products",
+  Product.find({ userId: req.user._id })
+
+    // .select('title price -_id')
+    // .populate('userId', 'name')
+    .then((products) => {
+      res.render("admin/products", {
+        prods: products,
+        pageTitle: "Products",
+        path: "/admin/products",
+      });
     });
-  });
 };
