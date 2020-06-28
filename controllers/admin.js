@@ -1,5 +1,6 @@
 const Product = require("../models/product");
 const mongodb = require("mongodb");
+const { validationResult } = require("express-validator/check");
 
 exports.getAddProduct = (req, res, next) => {
   if (!req.session.isLoggedIn) {
@@ -9,6 +10,9 @@ exports.getAddProduct = (req, res, next) => {
     pageTitle: "Add Product",
     path: "/admin/add-product",
     editing: false,
+    hasError: false,
+    errorMessage: null,
+    validationErrors: []
   });
 };
 
@@ -18,6 +22,24 @@ exports.postAddProduct = (req, res, next) => {
   const imageUrl = req.body.imageUrl;
   const description = req.body.description;
   const price = req.body.price;
+  //validation
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).render("admin/edit-product", {
+      pageTitle: "Add Product",
+      path: "/admin/add-product",
+      editing: false,
+      product: {
+        title: title,
+        imageUrl: imageUrl,
+        description: description,
+        price: price,
+      },
+      hasError: true,
+      errorMessage: errors.array()[0].msg,
+      validationErrors: errors.array()
+    });
+  }
   const product = new Product({
     title: title,
     imageUrl: imageUrl,
@@ -50,6 +72,9 @@ exports.getEditProduct = (req, res, next) => {
         path: "/admin/edit-product",
         editing: editMode,
         product: product,
+        hasError: false,
+        errorMessage: null,
+        validationErrors: []
       });
     })
     .catch((err) => console.log(err));
@@ -61,6 +86,24 @@ exports.postEditProduct = (req, res, next) => {
   const imageUrl = req.body.imageUrl;
   const description = req.body.description;
   const price = req.body.price;
+  //validation
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).render("admin/edit-product", {
+      pageTitle: "Edit Product",
+      path: "/admin/edit-product",
+      editing: true,
+      product: {
+        title: title,
+        imageUrl: imageUrl,
+        description: description,
+        price: price,
+      },
+      hasError: true,
+      errorMessage: errors.array()[0].msg,
+      validationErrors: errors.array()
+    });
+  }
   Product.findById(prodId)
     //the return is a full mongoose object. so we can call save on it
     .then((product) => {
@@ -99,6 +142,7 @@ exports.getProducts = (req, res, next) => {
         prods: products,
         pageTitle: "Products",
         path: "/admin/products",
+        hasError: false,
       });
     });
 };

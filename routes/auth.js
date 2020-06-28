@@ -15,19 +15,21 @@ router.post(
     check("email")
       .isEmail()
       .withMessage("Please enter a valid email")
-      .custom((value, { req }) => {
-        return User.findOne({ email: value }).then((selection) => {
-          if (selection) {
-            return Promise.reject("email in use please pick another one");
-          }
-        });
-      }),
+      .normalizeEmail(),
+    //   .custom((value, { req }) => {
+    //     return User.findOne({ email: value }).then((selection) => {
+    //       if (selection) {
+    //         return Promise.reject("email in use please pick another one");
+    //       }
+    //     });
+    //   }),
     body(
       "password",
       "please enter a password with only numbers and text and at least 5 characters"
     )
       .isLength({ min: 5 })
-      .isAlphanumeric(),
+      .isAlphanumeric()
+      .trim(),
   ],
   authController.postLogin
 );
@@ -48,14 +50,16 @@ router.post(
             return Promise.reject("email in use please pick another one");
           }
         });
-      }),
+      })
+      .normalizeEmail(),
     body(
       "password",
       "please enter a password with only numbers and text and at least 5 characters"
     )
       .isLength({ min: 5 })
-      .isAlphanumeric(),
-    body("confirmPassword").custom((value, { req }) => {
+      .isAlphanumeric()
+      .trim(),
+    body("confirmPassword").trim().custom((value, { req }) => {
       if (value !== req.body.password) {
         throw new Error("Passwords have to match");
       }

@@ -45,7 +45,7 @@ exports.postLogin = (req, res, next) => {
         email: email,
         password: password,
       },
-      validationErrors: [],
+      validationErrors: errors.array(),
     });
   }
   User.findOne({ email: email })
