@@ -1,5 +1,5 @@
 const path = require("path");
-const { check, body } = require("express-validator/check");
+const { check, body } = require("express-validator");
 
 const express = require("express");
 
@@ -19,9 +19,9 @@ router.post(
       .isLength({ min: 3 })
       .withMessage("Title has to have a value")
       .trim(),
-    body("imageUrl")
-      .isURL()
-      .withMessage("the imageUrl cannot be empty"),
+    // body("imageUrl")
+    //   .isURL()
+    //   .withMessage("the imageUrl cannot be empty"),
     body("price").isFloat().withMessage("price has to have a value"),
     body("description")
       .isLength({ min: 3 })
@@ -40,9 +40,9 @@ router.post(
       .isLength({ min: 3 })
       .withMessage("Title has to have a value")
       .trim(),
-    body("imageUrl")
-      .isURL()
-      .withMessage("the imageUrl cannot be empty"),
+    // body("imageUrl")
+    //   .isURL()
+    //   .withMessage("the imageUrl cannot be empty"),
     body("price").isFloat().withMessage("price has to have a value"),
     body("description")
       .isLength({ min: 3 })

@@ -1,6 +1,6 @@
 const Product = require("../models/product");
 const mongodb = require("mongodb");
-const { validationResult } = require("express-validator/check");
+const { validationResult } = require("express-validator");
 
 exports.getAddProduct = (req, res, next) => {
   if (!req.session.isLoggedIn) {
@@ -19,9 +19,25 @@ exports.getAddProduct = (req, res, next) => {
 exports.postAddProduct = (req, res, next) => {
   console.log(req.session);
   const title = req.body.title;
-  const imageUrl = req.body.imageUrl;
+  const image = req.file;
   const description = req.body.description;
   const price = req.body.price;
+  if (!image) {
+    return res.status(422).render("admin/edit-product", {
+      pageTitle: "Add Product",
+      path: "/admin/add-product",
+      editing: false,
+      product: {
+        title: title,
+        description: description,
+        price: price,
+      },
+      hasError: true,
+      errorMessage: "Attached file is not an image",
+      validationErrors: [],
+    });
+  }
+
   //validation
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -31,7 +47,6 @@ exports.postAddProduct = (req, res, next) => {
       editing: false,
       product: {
         title: title,
-        imageUrl: imageUrl,
         description: description,
         price: price,
       },
@@ -40,6 +55,7 @@ exports.postAddProduct = (req, res, next) => {
       validationErrors: errors.array(),
     });
   }
+  const imageUrl = image.path;
   const product = new Product({
     title: title,
     imageUrl: imageUrl,
@@ -91,9 +107,10 @@ exports.getEditProduct = (req, res, next) => {
 exports.postEditProduct = (req, res, next) => {
   const prodId = req.body.productId;
   const title = req.body.title;
-  const imageUrl = req.body.imageUrl;
+  const image = req.file;
   const description = req.body.description;
   const price = req.body.price;
+
   //validation
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -103,7 +120,6 @@ exports.postEditProduct = (req, res, next) => {
       editing: true,
       product: {
         title: title,
-        imageUrl: imageUrl,
         description: description,
         price: price,
         _id: prodId,
@@ -113,6 +129,7 @@ exports.postEditProduct = (req, res, next) => {
       validationErrors: errors.array(),
     });
   }
+
   Product.findById(prodId)
     //the return is a full mongoose object. so we can call save on it
     .then((product) => {
@@ -120,7 +137,7 @@ exports.postEditProduct = (req, res, next) => {
         return redirect("/");
       }
       product.title = title;
-      product.imageUrl = imageUrl;
+      if (image) product.imageUrl = image.path;
       product.description = description;
       product.price = price;
       return product.save().then((result) => {

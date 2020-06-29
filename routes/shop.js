@@ -27,5 +27,7 @@ router.post('/cart-delete-item',isAuth,shopController.postdeleteCartItem);
 
 router.post('/create-order',isAuth,shopController.postOrder);
 
+router.get('/orders/:orderId',isAuth,shopController.getInvoice)
+
 //export the route so it can be imported in the main app
 module.exports = router;
