@@ -158,19 +158,41 @@ exports.postOrder = (req, res, next) => {
 
 exports.getInvoice = (req, res, next) => {
   const orderId = req.params.orderId;
-  const invoiceName = `invoice-${orderId}.pdf`;
+  Order.findById(orderId)
+    .then((order) => {
+      if (!order) return next(new Error("No order found"));
+      if (order.user.userId.toString() !== req.user._id.toString()) {
+        return next(new Error("Unauthorized"));
+      }
 
-  fs.readFile(
-    path.join(rootPath, "data", "invoices", invoiceName),
-    (err, data) => {
-      if (err) return next(err);
+      const invoiceName = `invoice-${orderId}.pdf`;
+      //   fs.readFile(
+      //     path.join(rootPath, "data", "invoices", invoiceName),
+      //     (err, data) => {
+      //       if (err) return next(err);
+      //       res.setHeader("Content-Type", "application/pdf");
+      //       res.setHeader(
+      //         "Content-Disposition",
+      //         "inline; filename='" + invoiceName + "'"
+      //       );
+      //       res.send(data);
+      //     }
+      //   );
+      
+      //send file in a stream of data instead of prealoading it in the memory
+      const file = fs.createReadStream(
+        path.join(rootPath, "data", "invoices", invoiceName)
+      );
       res.setHeader("Content-Type", "application/pdf");
       res.setHeader(
         "Content-Disposition",
-
         "inline; filename='" + invoiceName + "'"
       );
-      res.send(data);
-    }
-  );
+      file.pipe(res);
+    })
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
