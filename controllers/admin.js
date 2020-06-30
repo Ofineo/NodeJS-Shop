@@ -3,6 +3,9 @@ const mongodb = require("mongodb");
 const { validationResult } = require("express-validator");
 
 const fileHelper = require("../util/file");
+// const { strokeOpacity } = require("pdfkit/js/mixins/color");
+
+const ITEMS_PER_PAGE = 2;
 
 exports.getAddProduct = (req, res, next) => {
   if (!req.session.isLoggedIn) {
@@ -170,13 +173,24 @@ exports.postDeleteProduct = (req, res, next) => {
       res.redirect("/admin/products");
     })
     .catch((err) => {
-      console.log(err);
-      res.status(500).redirect("/500");
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
 };
 
 exports.getProducts = (req, res, next) => {
+  const page = +req.query.page || 1;
+  let filteredProducts;
+
   Product.find({ userId: req.user._id })
+    .countDocuments()
+    .then((numProducts) => {
+      filteredProducts = numProducts;
+      return Product.find({ userId: req.user._id })
+        .skip((page - 1) * ITEMS_PER_PAGE)
+        .limit(ITEMS_PER_PAGE);
+    })
 
     // .select('title price -_id')
     // .populate('userId', 'name')
@@ -186,6 +200,17 @@ exports.getProducts = (req, res, next) => {
         pageTitle: "Products",
         path: "/admin/products",
         hasError: false,
+        currentPage: page,
+        hasNextPage: ITEMS_PER_PAGE * page < filteredProducts,
+        hasPreviousPage: page > 1,
+        nextPage: page + 1,
+        previousPage: page - 1,
+        lastPage: Math.ceil(filteredProducts / ITEMS_PER_PAGE),
       });
+    })
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
 };
