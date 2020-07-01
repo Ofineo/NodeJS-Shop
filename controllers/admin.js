@@ -4,8 +4,7 @@ const { validationResult } = require("express-validator");
 
 const fileHelper = require("../util/file");
 // const { strokeOpacity } = require("pdfkit/js/mixins/color");
-
-const ITEMS_PER_PAGE = 2;
+const ITEMS_PER_PAGE = require("../util/constants").ITEMS_PER_PAGE;
 
 exports.getAddProduct = (req, res, next) => {
   if (!req.session.isLoggedIn) {
@@ -160,7 +159,7 @@ exports.postEditProduct = (req, res, next) => {
     });
 };
 
-exports.postDeleteProduct = (req, res, next) => {
+exports.deleteProduct = (req, res, next) => {
   const prodId = req.params.productId;
   Product.findById(prodId)
     .then((prod) => {
@@ -170,12 +169,12 @@ exports.postDeleteProduct = (req, res, next) => {
     })
     .then(() => {
       console.log("DELETED PRODUCT");
-      res.redirect("/admin/products");
+      res.status(200).json({ message: "success" });
     })
     .catch((err) => {
-      const error = new Error(err);
-      error.httpStatusCode = 500;
-      return next(error);
+      res
+        .status(500)
+        .json({ message: "delete product failed", info: err.message });
     });
 };
 
