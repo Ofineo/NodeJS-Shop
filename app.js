@@ -8,11 +8,12 @@ const MongoDbStore = require("connect-mongodb-session")(session);
 const csrf = require("csurf");
 const flash = require("connect-flash");
 const multer = require("multer");
+const helmet = require('helmet');
 
-const MONGODB_URI =
-  "mongodb+srv://nodeComplete:rYX7GHW1EobK0XFw@node-complete-5hx8z.mongodb.net/shop?retryWrites=true&w=majority";
+const MONGODB_URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@node-complete-5hx8z.mongodb.net/${process.env.MONGO_DEAFULT_DB}?retryWrites=true&w=majority`;
 
 const app = express();
+
 const store = new MongoDbStore({ uri: MONGODB_URI, collection: "sessions" });
 const csrfProtection = csrf();
 
@@ -28,12 +29,12 @@ const User = require("./models/user");
 //setting up parsing packages for text and image handling
 const fileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'images');
+    cb(null, "images");
   },
   filename: (req, file, cb) => {
     // cb(null, new Date().toISOString() + '-' + file.originalname);
-    cb(null,`${Math.random()}-${file.originalname}`);
-  }
+    cb(null, `${Math.random()}-${file.originalname}`);
+  },
 });
 
 const fileFilter = (req, file, cb) => {
@@ -48,6 +49,8 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
+app.use(helmet());
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(
   multer({ storage: fileStorage, fileFilter: fileFilter }).single("image")
@@ -55,7 +58,7 @@ app.use(
 
 //setup a path for static serving images, css, etc.
 app.use(express.static(path.join(__dirname, "public")));
-app.use('/images',express.static(path.join(__dirname, "images")));
+app.use("/images", express.static(path.join(__dirname, "images")));
 
 app.use(
   session({
@@ -111,7 +114,7 @@ app.use((error, req, res, next) => {
 mongoose
   .connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then((result) => {
-    app.listen(3000);
+    app.listen(process.env.PORT || 3000);
   })
   .catch((err) => {
     console.log(err);
